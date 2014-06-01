@@ -1,6 +1,0 @@
-[submodule "external/pdf.js"]
-	path = external/pdf.js
-	url = https://github.com/mozilla/pdf.js.git
-[submodule "external/annotator"]
-	path = external/annotator
-	url = https://github.com/okfn/annotator.git
