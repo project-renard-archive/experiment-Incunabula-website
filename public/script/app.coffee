@@ -11,7 +11,7 @@ var color = d3.scale.category20();
 
 var force = d3.layout.force()
     .charge(-240)
-    .linkDistance(30)
+    .linkDistance(200)
     .size([width, height]);
 
 var svg = d3.select("body").append("svg")
@@ -24,7 +24,7 @@ d3.json("/api/bib/db/zotero", function(error, graph) {
   force
       .nodes(graph.nodes)
       .links(graph.links)
-      .gravity(Math.atan(total / 50) / Math.PI * 0.4)
+      //.gravity(Math.atan(total / 50) / Math.PI * 0.4)
       .start();
 
   var link = svg.selectAll(".link")

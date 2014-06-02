@@ -10,6 +10,21 @@ use List::UtilsBy qw(sort_by);
 
 sub zotero_graph {
 	my $self = shift;
+	my $g = $self->build_collection_graph;
+	my $d3 = Graph::D3->new( graph => $g );
+	my $force_data = $d3->force_directed_graph();
+	for my $node (@{$force_data->{nodes}}) {
+		my $id = $node->{name};
+		$node = {
+			%$node,
+			%{ $g->get_vertex_attributes($id) }
+		};
+	}
+	$self->render( json => $force_data );
+}
+
+sub build_collection_graph {
+	my $self = shift;
 	my $g = Graph::Directed->new;
 	my $add_vertex = sub {
 		my ($vertex, $parent_id) = @_;
@@ -46,21 +61,12 @@ sub zotero_graph {
 		};
 
 		# if undef, then the parent is the root node
-		my $parent_id = $coll->get_column('parentcollectionid') // 0;
+		my $parent_id = $coll->get_column('parentcollectionid')
+			// $root->{zotero_id};
 
 		$add_vertex->( $collection_data, $parent_id );
 	}
-
-	my $d3 = Graph::D3->new( graph => $g );
-	my $force_data = $d3->force_directed_graph();
-	for my $node (@{$force_data->{nodes}}) {
-		my $id = $node->{name};
-		$node = {
-			%$node,
-			%{ $g->get_vertex_attributes($id) }
-		};
-	}
-	$self->render( json => $force_data );
+	$g;
 }
 
 1;
