@@ -22,3 +22,5 @@ requires 'String::Tagged';
 requires 'Lingua::EN::Sentence::Offsets';
 requires 'Text::Unidecode';
 requires 'Class::Unload';
+requires 'Graph';
+requires 'Graph::D3';

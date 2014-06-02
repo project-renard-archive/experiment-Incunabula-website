@@ -10,7 +10,7 @@ var width = 960,
 var color = d3.scale.category20();
 
 var force = d3.layout.force()
-    .charge(-120)
+    .charge(-240)
     .linkDistance(30)
     .size([width, height]);
 
@@ -18,10 +18,13 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
-d3.json("miserables.json", function(error, graph) {
+// d3.json("miserables.json", function(error, graph) {
+d3.json("/api/bib/db/zotero", function(error, graph) {
+  var total = graph.nodes.length || 1;
   force
       .nodes(graph.nodes)
       .links(graph.links)
+      .gravity(Math.atan(total / 50) / Math.PI * 0.4)
       .start();
 
   var link = svg.selectAll(".link")
@@ -34,9 +37,17 @@ d3.json("miserables.json", function(error, graph) {
       .data(graph.nodes)
     .enter().append("circle")
       .attr("class", "node")
+      .attr("class", function(d) { return d.type } )
       .attr("r", 5)
-      .style("fill", function(d) { return color(d.group); })
+      .style("fill", function(d) { return color(d.type); })
       .call(force.drag);
+
+  var texts = svg.selectAll("text.label")
+                .data(graph.nodes)
+                .enter().append("text")
+                .attr("class", "label")
+                .attr("fill", "black")
+                .text(function(d) {  return d.name;  })
 
   node.append("title")
       .text(function(d) { return d.name; });
@@ -49,6 +60,10 @@ d3.json("miserables.json", function(error, graph) {
 
     node.attr("cx", function(d) { return d.x; })
         .attr("cy", function(d) { return d.y; });
+
+    texts.attr("transform", function(d) {
+        return "translate(" + d.x + "," + d.y + ")";
+    });
   });
 });
 
