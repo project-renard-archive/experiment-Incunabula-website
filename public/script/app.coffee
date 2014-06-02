@@ -2,6 +2,7 @@ define ["module", "d3"], (module, d3) ->
   class app
     constructor: ->
       1
+      # from <http://bl.ocks.org/mbostock/4062045>
       `
 var width = 960,
     height = 500;
