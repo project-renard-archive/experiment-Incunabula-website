@@ -1,0 +1,18 @@
+Idea
+	data sources
+		bibliography sources
+			zotero
+				root node - Zotero Library
+				category nodes: children of root node
+					each of the categories and their children
+				bibitem: children of category nodes
+					bibitem has unique ID
+	endpoint
+		/api/bibitem/:id
+			get back JSON of metadata
+				later: RDF-something?
+					owl:sameAs
+	event
+		on click of bibitem
+			open 
+
