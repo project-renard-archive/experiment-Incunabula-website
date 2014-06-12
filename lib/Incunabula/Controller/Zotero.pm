@@ -8,11 +8,52 @@ use Graph::Directed;
 use Graph::D3;
 use List::UtilsBy qw(sort_by);
 
+sub root_node {
+
+}
+
+sub category_node {
+
+}
+
+sub category_node_children {
+
+}
+
+sub node_children {
+
+}
+
 sub zotero_graph {
 	my $self = shift;
 	my $g = $self->build_collection_graph;
-	my $force_data = $self->as_d3_force_directed_graph( $g );
-	$self->render( json => $force_data );
+	#my $force_data = $self->as_d3_force_directed_graph( $g );
+	my $cytoscape_data = $self->as_cytoscapejs_graph( $g );
+	$self->render( json => $cytoscape_data );
+}
+
+sub as_cytoscapejs_graph {
+	my ($self, $graph) = @_;
+	my @data;
+	my @v = $graph->vertices;
+	for my $vertex (@v) {
+		push @data, { data => {
+				id => "n$vertex",
+				%{ $graph->get_vertex_attributes($vertex) },
+			}, group => 'nodes' };
+	}
+
+	my @e = $graph->edges;
+	my $edge_id = 0;
+	for my $edge (@e) {
+		push @data, { data => { id => "e$edge_id",
+				source => "n$edge->[0]",
+				target => "n$edge->[1]",},
+			group => 'edges' };
+		$edge_id++;
+	}
+
+	\@data;
 }
 
 sub as_d3_force_directed_graph {
@@ -27,52 +68,6 @@ sub as_d3_force_directed_graph {
 		};
 	}
 	$force_data;
-}
-
-sub build_collection_graph {
-	my $self = shift;
-	my $g = Graph::Directed->new;
-	my $add_vertex = sub {
-		my ($vertex, $parent_id) = @_;
-		my $id = $vertex->{zotero_id};
-		$g->add_vertex( $id );
-		$g->set_vertex_attributes( $id, $vertex );
-		$g->add_edge($id, $parent_id) if defined $parent_id;
-	};
-
-	# root node: id 0 is not in the DB
-	$add_vertex->(
-		my $root = { name => 'Zotero Library',
-			type => 'db-root',
-			zotero_id => 0 },
-		undef );
-
-	# unfiled items: id -1 is not from the DB
-	$add_vertex->(
-		{ name => 'Unfiled',
-			type => 'category-unfiled',
-			zotero_id => '-1' },
-		$root->{zotero_id} );
-
-	# get all collections in our library (as opposed to a shared library)
-	my $collections_rs = $self->zotero
-		->library->collections
-		->search( { libraryid => undef } );
-
-	while (my $coll = $collections_rs->next) {
-		my $collection_data = {
-			name => $coll->get_column('collectionname'),
-			type => 'category',
-			zotero_id => $coll->get_column('collectionid'),
-		};
-
-		# if undef, then the parent is the root node
-		my $parent_id = $coll->get_column('parentcollectionid')
-			// $root->{zotero_id};
-
-		$add_vertex->( $collection_data, $parent_id );
-	}
-	$g;
 }
 
 1;
