@@ -16,3 +16,22 @@ Idea
 		on click of bibitem
 			open 
 
+/api/graph/:graph-name/*node/info
+	returns
+		; {
+		;   type => "node",
+		;   category => Root | Folder | Document
+		;   outdegree => [Int],
+		;   indegree => [Int],
+		;   outgoing_url => [Str],
+		;   incoming_url => [Str],
+		; }
+		later
+			;   view => [Str]
+			how should the node be displayed?
+			Table/ID/info
+	subroutes
+		./incoming
+		./outgoing
+e.g., Zotero
+	/api/graph/:graph-name/:type/:node-id
