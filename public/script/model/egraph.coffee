@@ -1,6 +1,6 @@
 app = app || {}
-define ["jquery", "cytoscape", "Backbone"], (jQuery, cytoscape) ->
-  class app.egraph
+define ["backbone", "jquery", "cytoscape"], (Backbone, jQuery, cytoscape) ->
+  class app.egraph extends Backbone.Model
     graph: null # graph
     root_url: '' # where to load the root of the graph
 

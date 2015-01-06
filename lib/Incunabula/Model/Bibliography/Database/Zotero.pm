@@ -2,10 +2,11 @@ package Incunabula::Model::Bibliography::Database::Zotero;
 use strict;
 
 use Moo;
+use Graph::Directed;
 
 has zotero => ( is => 'rw', required => 1 );;
 
-has graph_name => ( is => 'rw', required => 1 );
+#has graph_name => ( is => 'rw', required => 1 );
 
 
 sub build_collection_graph {

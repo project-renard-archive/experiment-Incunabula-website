@@ -12,3 +12,10 @@
 }
 /* end d3 graph CSS }}} */
 
+#cy {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}

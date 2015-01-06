@@ -1,70 +1,190 @@
-define ["module", "d3"], (module, d3) ->
+define ["module", "jquery", "d3", "cytoscape",
+  "cs!app/model/egraph",
+  "cs!app/view/egraph"
+], (module, jQuery, d3, cytoscape,
+EgraphModel, EgraphView ) ->
   class app
     constructor: ->
-      1
-      # from <http://bl.ocks.org/mbostock/4062045>
-      `
-var width = 960,
-    height = 500;
+      @egraph_render()
 
-var color = d3.scale.category20();
+    egraph_render: ->
+      # TODO
+      model = new EgraphModel
+        root_url: "/api/bib/db/zotero"
+      model.data (json) ->
+        console.log json
 
-var force = d3.layout.force()
-    .charge(-240)
-    .linkDistance(200)
-    .size([width, height]);
+    cyto_image_ex: ->
+      `$(function(){ // on dom ready
 
-var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height);
+// photos from flickr with creative commons license
+  
+$('#cy').cytoscape({
+  style: cytoscape.stylesheet()
+    .selector('node')
+      .css({
+        'height': 80,
+        'width': 80,
+        'background-fit': 'cover',
+        'border-color': '#000',
+        'border-width': 3,
+        'border-opacity': 0.5
+      })
+    .selector('.eating')
+      .css({
+        'border-color': 'red'
+      })
+    .selector('.eater')
+      .css({
+        'border-width': 9
+      })
+    .selector('edge')
+      .css({
+        'width': 6,
+        'target-arrow-shape': 'triangle',
+        'line-color': '#ffaaaa',
+        'target-arrow-color': '#ffaaaa'
+      })
+    .selector('#bird')
+      .css({
+        'background-image': 'https://farm8.staticflickr.com/7272/7633179468_3e19e45a0c_b.jpg'
+      })
+    .selector('#cat')
+      .css({
+        'background-image': 'https://farm2.staticflickr.com/1261/1413379559_412a540d29_b.jpg'
+      })
+    .selector('#ladybug')
+      .css({
+        'background-image': 'https://farm4.staticflickr.com/3063/2751740612_af11fb090b_b.jpg'
+      })
+  .selector('#aphid')
+      .css({
+        'background-image': 'https://farm9.staticflickr.com/8316/8003798443_32d01257c8_b.jpg'
+      })
+  .selector('#rose')
+      .css({
+        'background-image': 'https://farm6.staticflickr.com/5109/5817854163_eaccd688f5_b.jpg'
+      })
+  .selector('#grasshopper')
+      .css({
+        'background-image': 'https://farm7.staticflickr.com/6098/6224655456_f4c3c98589_b.jpg'
+      })
+  .selector('#plant')
+      .css({
+        'background-image': 'https://farm1.staticflickr.com/231/524893064_f49a4d1d10_z.jpg'
+      })
+  .selector('#wheat')
+      .css({
+        'background-image': 'https://farm3.staticflickr.com/2660/3715569167_7e978e8319_b.jpg'
+      }),
+  
+  elements: {
+    nodes: [
+      { data: { id: 'cat' } },
+      { data: { id: 'bird' } },
+      { data: { id: 'ladybug' } },
+      { data: { id: 'aphid' } },
+      { data: { id: 'rose' } },
+      { data: { id: 'grasshopper' } },
+      { data: { id: 'plant' } },
+      { data: { id: 'wheat' } }
+    ],
+    edges: [
+      { data: { source: 'cat', target: 'bird' } },
+      { data: { source: 'bird', target: 'ladybug' } },
+      { data: { source: 'bird', target: 'grasshopper' } },
+      { data: { source: 'grasshopper', target: 'plant' } },
+      { data: { source: 'grasshopper', target: 'wheat' } },
+      { data: { source: 'ladybug', target: 'aphid' } },
+      { data: { source: 'aphid', target: 'rose' } }
+    ]
+  },
+  
+  layout: {
+    name: 'breadthfirst',
+    directed: true,
+    padding: 10
+  },
+  
+  ready: function(){
+    window.cy = this;
+    
+    cy.on('tap', 'node', function(){
+      var nodes = this;
+      var tapped = nodes;
+      var food = [];
+      
+      nodes.addClass('eater');
+      
+      for(;;){
+        var connectedEdges = nodes.connectedEdges(function(){
+          return !this.target().anySame( nodes );
+        });
+        
+        var connectedNodes = connectedEdges.targets();
+        
+        Array.prototype.push.apply( food, connectedNodes );
+        
+        nodes = connectedNodes;
+        
+        if( nodes.empty() ){ break; }
+      }
+            
+      var delay = 0;
+      var duration = 500;
+      for( var i = food.length - 1; i >= 0; i-- ){ (function(){
+        var thisFood = food[i];
+        var eater = thisFood.connectedEdges(function(){
+          return this.target().same(thisFood);
+        }).source();
+                
+        thisFood.delay( delay, function(){
+          eater.addClass('eating');
+        } ).animate({
+          position: eater.position(),
+          css: {
+            'width': 10,
+            'height': 10,
+            'border-width': 0,
+            'opacity': 0
+          }
+        }, {
+          duration: duration,
+          complete: function(){
+            thisFood.remove();
+          }
+        });
+        
+        delay += duration;
+      })(); } // for
+      
+    }); // on tap
+  } // on ready
+}); // cy init
 
-// d3.json("miserables.json", function(error, graph) {
-d3.json("/api/bib/db/zotero", function(error, graph) {
-  var total = graph.nodes.length || 1;
-  force
-      .nodes(graph.nodes)
-      .links(graph.links)
-      //.gravity(Math.atan(total / 50) / Math.PI * 0.4)
-      .start();
-
-  var link = svg.selectAll(".link")
-      .data(graph.links)
-    .enter().append("line")
-      .attr("class", "link")
-      .style("stroke-width", function(d) { return Math.sqrt(d.value); });
-
-  var node = svg.selectAll(".node")
-      .data(graph.nodes)
-    .enter().append("circle")
-      .attr("class", "node")
-      .attr("class", function(d) { return d.type } )
-      .attr("r", 5)
-      .style("fill", function(d) { return color(d.type); })
-      .call(force.drag);
-
-  var texts = svg.selectAll("text.label")
-                .data(graph.nodes)
-                .enter().append("text")
-                .attr("class", "label")
-                .attr("fill", "black")
-                .text(function(d) {  return d.name;  })
-
-  node.append("title")
-      .text(function(d) { return d.name; });
-
-  force.on("tick", function() {
-    link.attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
-
-    node.attr("cx", function(d) { return d.x; })
-        .attr("cy", function(d) { return d.y; });
-
-    texts.attr("transform", function(d) {
-        return "translate(" + d.x + "," + d.y + ")";
-    });
-  });
-});
-
+}); // on dom ready
 `
+    temp: ->
+      $.getJSON "/api/bib/db/zotero", (json_data) ->
+        console.log( json_data )
+        $('#cy').cytoscape
+          height: 200,
+          width: 200,
+          elements: `
+[
+    { data: { id: 'foo' }, group: 'nodes' },
+    { data: { id: 'bar' }, group: 'nodes' },
+    { data: { weight: 100 },
+      group: 'nodes',
+      position: { x: 100, y: 100 },
+      classes: 'className1 className2', selected: true, selectable: true,
+      locked: true, grabbable: true
+    },
+    { data: { id: 'baz', source: 'foo', target: 'bar' }, group: 'edges' }
+  ]`
+          style: [
+              selector: 'node',
+              css:
+                'content': 'data(id)',
+          ]
+      1

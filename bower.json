@@ -11,6 +11,7 @@
   ],
   "dependencies": {
     "jquery": "~2.0.3",
+    "backbone": "~1.0.0",
     "d3": "~3.4.8",
     "cytoscape": "~2.2.9",
     "require-cs": "~0.4.4",

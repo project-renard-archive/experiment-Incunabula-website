@@ -2,6 +2,8 @@ package Incunabula;
 use Mojo::Base 'Mojolicious';
 use Mojolicious::Plugin::RenderFile;
 
+use Incunabula::Model::Bibliography::Database::Zotero;
+
 # This method will run once at server start
 sub startup {
   my $self = shift;
@@ -9,8 +11,10 @@ sub startup {
   $self->plugin('RenderFile');
 
   my $config = $self->plugin('Config');
+  my $zotero_model = Incunabula::Model::Bibliography::Database::Zotero
+	  ->new( zotero => $self->config->{zotero_db} );
   $self->helper(zotero => sub {
-	  $self->config->{zotero_db};
+	$zotero_model;
   });
 
   $self->helper(cache => sub {

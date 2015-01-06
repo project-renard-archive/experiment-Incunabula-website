@@ -4,7 +4,6 @@ use strict;
 
 use utf8::all;
 use feature 'fc'; # make sure we can foldcase
-use Graph::Directed;
 use Graph::D3;
 use List::UtilsBy qw(sort_by);
 
@@ -26,10 +25,10 @@ sub node_children {
 
 sub zotero_graph {
 	my $self = shift;
-	my $g = $self->build_collection_graph;
-	#my $force_data = $self->as_d3_force_directed_graph( $g );
-	my $cytoscape_data = $self->as_cytoscapejs_graph( $g );
-	$self->render( json => $cytoscape_data );
+	my $g = $self->zotero->build_collection_graph;
+	my $force_data = $self->as_d3_force_directed_graph( $g );
+	#my $cytoscape_data = $self->as_cytoscapejs_graph( $g );
+	$self->render( json => $force_data );
 }
 
 sub as_cytoscapejs_graph {

@@ -1,4 +1,6 @@
 % layout 'default';
 % title 'Welcome';
 
+<div id="cy"></div>
+
 <script data-main="<%= url_for '/script/setup.js' %>" src="<%= url_for '/vendor/requirejs/require.js' %>"></script>
