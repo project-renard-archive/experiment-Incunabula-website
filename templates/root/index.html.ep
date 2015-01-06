@@ -3,4 +3,22 @@
 
 <div id="cy"></div>
 
-<script data-main="<%= url_for '/script/setup.js' %>" src="<%= url_for '/vendor/requirejs/require.js' %>"></script>
+<div id="DV-container">
+
+  <div class="DV-loadingDocument"><span>Loading</span></div>
+  <noscript>
+    <div id="DV-noJS">
+      The Document Viewer requires that you enable Javascript.
+    </div>
+  </noscript>
+
+</div>
+
+<script src="vendor/document-viewer/viewer.js" type="text/javascript" charset="utf-8"></script>
+<script src="vendor/document-viewer/templates.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+  DV.load('http://documents.nytimes.com/goldman-sachs-internal-emails.json', { container: '#DV-container' });
+</script>
+
+<!--<script data-main="<%= url_for '/script/setup.js' %>" src="<%= url_for '/vendor/requirejs/require.js' %>"></script>-->

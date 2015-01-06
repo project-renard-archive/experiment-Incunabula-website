@@ -4,6 +4,7 @@
     <title><%= title %></title>
 
     %= stylesheet '/css/style.css'
+    %= stylesheet '/vendor/document-viewer/viewer-datauri.css'
   </head>
   <body><%= content %></body>
 </html>

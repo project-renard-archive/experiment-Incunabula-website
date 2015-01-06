@@ -10,6 +10,7 @@
     "tests"
   ],
   "dependencies": {
+    "document-viewer": "git@github.com:documentcloud/document-viewer.git",
     "jquery": "~2.0.3",
     "backbone": "~1.0.0",
     "d3": "~3.4.8",
@@ -18,6 +19,16 @@
     "requirejs": "~2.1.8"
   },
   "install": {
-    "path": "public/vendor"
+    "path": "public/vendor",
+    "sources": {
+      "document-viewer": [
+        "bower_components/document-viewer/public/assets/viewer.css",
+        "bower_components/document-viewer/public/assets/templates.js",
+        "bower_components/document-viewer/public/assets/viewer.js",
+        "bower_components/document-viewer/public/assets/print.css",
+        "bower_components/document-viewer/public/assets/viewer-datauri.css",
+        "bower_components/document-viewer/public/assets/print-datauri.css"
+      ]
+    }
   }
 }
