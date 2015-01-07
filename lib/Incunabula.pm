@@ -27,7 +27,9 @@ sub startup {
   # Normal route to controller
   $r->namespaces(['Incunabula::Controller']);
   $r->get('/')->to('root#index');
+  $r->get('/document-test.json')->to('document_viewer#index');
   $r->get('/api/bib/db/zotero')->to('zotero#zotero_graph');
+
 }
 
 1;

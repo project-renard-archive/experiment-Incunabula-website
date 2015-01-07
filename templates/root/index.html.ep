@@ -18,7 +18,8 @@
 <script src="vendor/document-viewer/templates.js" type="text/javascript" charset="utf-8"></script>
 
 <script type="text/javascript">
-  DV.load('http://documents.nytimes.com/goldman-sachs-internal-emails.json', { container: '#DV-container' });
+  //DV.load('http://documents.nytimes.com/goldman-sachs-internal-emails.json', { container: '#DV-container' });
+  DV.load('/document-test.json', { container: '#DV-container' });
 </script>
 
 <!--<script data-main="<%= url_for '/script/setup.js' %>" src="<%= url_for '/vendor/requirejs/require.js' %>"></script>-->
