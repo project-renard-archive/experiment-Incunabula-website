@@ -5,7 +5,7 @@ use warnings;
 
 use Moo::Role;
 
-has pages => ( is => 'lazy' );
+has number_of_pages => ( is => 'lazy' );
 
 
 1;
