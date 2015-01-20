@@ -1,12 +1,39 @@
 package Incunabula::Model::Bibliography::Database::Zotero;
+
 use strict;
+use warnings;
 
 use Moo;
 use Graph::Directed;
 
+BEGIN {
+	require Moo::Role;
+	Moo::Role->apply_roles_to_package( 'Biblio::Zotero::DB::Schema::Result::Item' , qw(Incunabula::Model::Bibliography::Item::Role::Zotero) );
+	Moo::Role->apply_roles_to_package( 'Biblio::Zotero::DB::Schema::Result::ItemAttachment', qw(Incunabula::Model::Document::Role::Zotero) );
+}
+
 has zotero => ( is => 'rw', required => 1 );;
 
 #has graph_name => ( is => 'rw', required => 1 );
+
+
+sub documents {
+	my ($self) = @_;
+
+	$self->zotero->schema->resultset('StoredItem')
+		->with_item_attachment_resultset('StoredItemAttachment')
+		->items_with_pdf_attachments
+		->search({},
+			{ prefetch => [
+					'item_datas',
+					'fulltext_item',
+					{ 'item_attachments_itemid'
+						=> { 'itemid' => 'fulltext_item' } },
+					{ 'item_attachments_sourceitemids'
+						=> { 'itemid' => 'fulltext_item' } },
+				] }
+		);
+}
 
 
 sub build_collection_graph {
