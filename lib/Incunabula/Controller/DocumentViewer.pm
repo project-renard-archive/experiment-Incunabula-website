@@ -18,5 +18,24 @@ sub index {
   $self->render(json => $json_data );
 }
 
+sub get_json_for_pdf {
+	my $data = {
+		sections => [],
+		pages => $num_of_pages,
+		id => $id,
+		title => $title,
+		description => $abstract,
+		resources => {
+			"page" => {
+				"image" => "http://s3.amazonaws.com/nytdocs/docs/322/pages/322-p{page}-{size}.gif",
+				"text" => "http://documents.nytimes.com/goldman-sachs-internal-emails/pages/p{page}.txt"
+			},
+			"related_story" => "http://www.nytimes.com/2010/04/25/business/25goldman.html",
+			"pdf" => "http://s3.amazonaws.com/nytdocs/docs/322/322.pdf",
+			"search" => "http://documents.nytimes.com/goldman-sachs-internal-emails/search.json?q={query}"
+		},
+	};
+}
+
 1;
 
